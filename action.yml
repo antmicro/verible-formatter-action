@@ -68,7 +68,7 @@ runs:
         -level="info" \
         -diff="$diff_cmd" \
         -fail-on-error="false" <"${tmp_file}" || true
-
+        this_change_should_break_this_flow
         echo "done running reviewdog"
         cat "${tmp_file}" | wc
         if [ -f "$event_file" ]; then
