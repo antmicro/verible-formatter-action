@@ -5,6 +5,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: chipsalliance/verible-formatter-action@main
+    - uses: chipsalliance/verible-formatter-action@mczyz/break-formatter
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
