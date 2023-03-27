@@ -30,7 +30,7 @@ runs:
           source /etc/os-release
           case "$ID" in
             ubuntu) echo 'Running on Ubuntu Linux'; exit 0 ;;
-                 *) echo 'Not running on Ubuntu Linux'; exit 1 ;; 
+                 *) echo 'Not running on Ubuntu Linux'; exit 1 ;;
           esac
     - name: Install dependencies
       shell: bash
@@ -50,12 +50,45 @@ runs:
         event_file=event.json
         diff_cmd="git diff FETCH_HEAD"
         if [ -f "$event_file" ]; then
+            echo "### Old ###"
+            echo "-------------------------"
+            echo "PR branch   : $pr_branch"
+            echo "Base branch : $base_branch"
             pr_branch=$(python3 -c "import sys, json; print(json.load(sys.stdin)['pull_request']['head']['ref'])" < $event_file)
             base_branch=$(python3 -c "import sys, json; print(json.load(sys.stdin)['pull_request']['base']['ref'])" < $event_file)
             git fetch origin $pr_branch
             git checkout $pr_branch
-            echo "the PR branch is $pr_branch"
-            echo "the base branch is $base_branch"
+            echo "-------------------------"
+            echo "PR branch   : $pr_branch"
+            echo "Base branch : $base_branch"
+            echo "# --- "
+
+            echo "### New ###"
+            pr_branch=$(python3 -c "import sys, json; print(json.load(sys.stdin)['pull_request']['head']['ref'])" < $event_file)
+            base_branch=$(python3 -c "import sys, json; print(json.load(sys.stdin)['pull_request']['base']['ref'])" < $event_file)
+            clone_url=$(python3 -c "import sys, json; print(json.load(sys.stdin)['pull_request']['head']['repo']['clone_url'])" < $event_file)
+            echo "# GitHub Repo Config --- "
+            echo "PR branch   : $pr_branch"
+            echo "Base branch : $base_branch"
+            echo "Clone url   : $clone_url"
+            echo "-------------------------"
+            echo "Remotes:"
+            git remote -v
+            echo "Adding new remote: $clone_url"
+            git remote add pr_repo "$clone_url"
+            echo "Remotes:"
+            git remote -v
+            echo "Fetching:"
+            git fetch pr_repo "$pr_branch"
+            git checkout "$pr_branch"
+            echo "Current HEAD:"
+            git rev-parse HEAD
+            echo "-------------------------"
+            echo "PR branch   : $pr_branch"
+            echo "Base branch : $base_branch"
+            echo "Clone url   : $clone_url"
+            echo "# --- "
+
             diff_cmd="git diff $base_branch $pr_branch"
             export OVERRIDE_GITHUB_EVENT_PATH=`pwd`/$event_file
         fi
