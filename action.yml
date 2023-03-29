@@ -9,7 +9,7 @@ inputs:
   files:
     description: 'Optional array of files with source code to format'
     required: false
-    default: './**/*.{v,sv}'
+    default: './**/*.{v,sv,vh,svh,vi,svi}'
   github_token:
     description: 'GITHUB_TOKEN'
     default: ''
